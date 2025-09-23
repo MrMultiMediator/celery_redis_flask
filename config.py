@@ -15,13 +15,19 @@ def celery_init_app(app: Flask) -> Celery:
 
 def create_app() -> Flask:
     app = Flask(__name__)
+
+    from .views import views
+    app.register_blueprint(views, url_prefix='/')
+
     app.config.from_mapping(
         CELERY=dict(
             broker_url="redis://localhost",
             result_backend="redis://localhost",
             task_ignore_result=True,
-        ),
-    )
+        ),  
+    )   
     app.config.from_prefixed_env()
+    app.jinja_env.auto_reload = True
     celery_init_app(app)
-    return app
+    return app 
+
