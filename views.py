@@ -1,6 +1,6 @@
-from tasks import flask_app, long_running_task #-Line 1
+from tasks import long_running_task #-Line 1
 from celery.result import AsyncResult#-Line 2
-from flask import request,jsonify 
+from flask import request, jsonify, Blueprint, render_template 
 
 views = Blueprint("views", __name__)
 
@@ -12,8 +12,10 @@ def home():
 
 @views.route("/trigger_task", methods=["POST"])
 def start_task() -> dict[str, object]:
-    iterations = request.args.get('iterations')
+    iterations = request.form.get('iterations')
+    print(f"Received {type(iterations)}")
     print(iterations)
+    return "success"
     result = long_running_task.delay(int(iterations))#-Line 3
     return {"result_id": result.id}
 

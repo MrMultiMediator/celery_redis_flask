@@ -16,7 +16,7 @@ def celery_init_app(app: Flask) -> Celery:
 def create_app() -> Flask:
     app = Flask(__name__)
 
-    from .views import views
+    from views import views
     app.register_blueprint(views, url_prefix='/')
 
     app.config.from_mapping(
