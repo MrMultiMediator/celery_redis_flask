@@ -28,9 +28,18 @@ def task_result() -> dict[str, object]:
                 "value": result.result,
             }
         else:
-            return jsonify({'status': 'ERROR', 'error_message': str(result.result)})
+            return {
+                "ready": True,
+                "successful": False,
+                "state": result.state,
+                "error_message": str(result.info),
+            }
     else:
-        return jsonify({'status': 'Running', 'state': result.state})
+        return {
+            "ready": False,
+            "state": result.state,
+            "meta": result.info,
+        }
 
 @views.route("/tasks", methods=["GET"])
 def get_tasks():
