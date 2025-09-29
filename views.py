@@ -14,6 +14,8 @@ def start_task() -> dict[str, object]:
     result = long_running_task.delay(int(iterations))
     # Use the Redis client from the Celery app
     current_app.extensions["celery"].backend.client.lpush("task_ids", result.id)
+    max_size = current_app.config["CELERY"]["task_list_max_size"]
+    current_app.extensions["celery"].backend.client.ltrim("task_ids", 0, max_size - 1)
     return {"result_id": result.id}
 
 @views.route("/get_result", methods=["GET"])

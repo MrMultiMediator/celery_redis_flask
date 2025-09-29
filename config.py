@@ -24,6 +24,7 @@ def create_app() -> Flask:
             broker_url="redis://localhost",
             result_backend="redis://localhost",
             task_ignore_result=False,
+            task_list_max_size=4,
         ),  
     )   
     app.config.from_prefixed_env()
