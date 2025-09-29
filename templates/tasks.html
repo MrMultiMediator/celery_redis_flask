@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Celery Tasks</title>
+</head>
+<body>
+    <h1>Celery Tasks</h1>
+    <ul id="task-list">
+        {% for task_id in task_ids %}
+            <li>
+                {{ task_id }}
+                <button onclick="getResult('{{ task_id }}')">Get Result</button>
+                <span id="result-{{ task_id }}"></span>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        async function getResult(taskId) {
+            const resultSpan = document.getElementById(`result-${taskId}`);
+            resultSpan.innerText = 'Loading...';
+
+            const response = await fetch(`/get_result?result_id=${taskId}`);
+            const data = await response.json();
+
+            if (data.ready) {
+                if (data.successful) {
+                    resultSpan.innerText = `Result: ${data.value}`;
+                } else {
+                    resultSpan.innerText = `Error: ${data.error_message}`;
+                }
+            } else {
+                resultSpan.innerText = 'Status: Running';
+            }
+        }
+    </script>
+</body>
+</html>
