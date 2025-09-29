@@ -30,7 +30,7 @@
                     resultSpan.innerText = `Error: ${data.error_message}`;
                 }
             } else {
-                resultSpan.innerText = 'Status: Running';
+                resultSpan.innerText = `Status: Running, State: ${data.state}`;
             }
         }
     </script>

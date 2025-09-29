@@ -1,3 +1,4 @@
+# Run celery like this: celery -A app.celery_app worker --loglevel=info
 from config import create_app #-Line 1
 
 flask_app = create_app()  #-Line 2
