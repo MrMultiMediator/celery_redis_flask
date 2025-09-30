@@ -19,12 +19,19 @@ def create_app() -> Flask:
     from views import views
     app.register_blueprint(views, url_prefix='/')
 
+
+    # In config.py, I added task_acks_late=True and
+    # worker_prefetch_multiplier=1 to the Celery
+    # settings. This tells a worker to only grab one task at a time and
+    # not to ackowledge it until it's finished
     app.config.from_mapping(
         CELERY=dict(
             broker_url="redis://localhost",
             result_backend="redis://localhost",
             task_ignore_result=False,
             task_list_max_size=4,
+            task_acks_late=True,
+            worker_prefetch_multiplier=1,
         ),  
     )   
     app.config.from_prefixed_env()
