@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # 1. The Redis Message Broker
+  redis:
+    image: redis:7-alpine
+    container_name: my_redis_broker
+    restart: always
+
+  # 2. The Flask Web Application (Task Producer)
+  web:
+    build: .
+    container_name: my_flask_app
+    command: gunicorn wsgi:app -b 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    environment:
+      # Key connection: Uses the service name 'redis'
+      CELERY_BROKER_URL: 'redis://redis:6379/0' 
+      CELERY_RESULT_BACKEND: 'redis://redis:6379/0'
+    volumes:
+      # Shared volume for file output
+      - ${HOST_DATA_PATH}:/app/data
+    depends_on:
+      - redis
+
+  # 3. The Celery Worker (Task Consumer)
+  worker:
+    build: .
+    container_name: my_celery_worker
+    command: celery -A app.celery worker --loglevel=info --concurrency=1
+    environment:
+      # Key connection: Uses the service name 'redis'
+      CELERY_BROKER_URL: 'redis://redis:6379/0'
+      CELERY_RESULT_BACKEND: 'redis://redis:6379/0'
+    volumes:
+      # Shared volume for file output
+      - ${HOST_DATA_PATH}:/app/data
+    depends_on:
+      - redis
+      - web
