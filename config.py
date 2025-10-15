@@ -1,3 +1,4 @@
+import os
 from celery import Celery, Task
 from flask import Flask
 
@@ -26,13 +27,13 @@ def create_app() -> Flask:
     # not to ackowledge it until it's finished
     app.config.from_mapping(
         CELERY=dict(
-            broker_url="redis://localhost",
-            result_backend="redis://localhost",
+            broker_url=os.environ.get('CELERY_BROKER_URL', 'redis://localhost'),
+            result_backend=os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost'),
             task_ignore_result=False,
             task_list_max_size=4,
             task_acks_late=True,
             worker_prefetch_multiplier=1,
-        ),  
+        ),
     )   
     app.config.from_prefixed_env()
     app.jinja_env.auto_reload = True

@@ -11,9 +11,10 @@ services:
   web:
     build: .
     container_name: my_flask_app
-    command: gunicorn wsgi:app -b 0.0.0.0:8000
+    command: >
+      micromamba run -n app-env gunicorn --bind 0.0.0.0:5000 app:flask_app
     ports:
-      - "8000:8000"
+      - "5000:5000"
     environment:
       # Key connection: Uses the service name 'redis'
       CELERY_BROKER_URL: 'redis://redis:6379/0' 
@@ -28,7 +29,8 @@ services:
   worker:
     build: .
     container_name: my_celery_worker
-    command: celery -A app.celery worker --loglevel=info --concurrency=1
+    command: >
+      micromamba run -n app-env celery -A app.celery_app worker --loglevel=info --concurrency=1
     environment:
       # Key connection: Uses the service name 'redis'
       CELERY_BROKER_URL: 'redis://redis:6379/0'

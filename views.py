@@ -4,12 +4,21 @@ from flask import request, jsonify, Blueprint, render_template, current_app
 
 views = Blueprint("views", __name__)
 
+def log_or_print(string):
+    try:
+        from flask import current_app
+
+        current_app.logger.info(string)
+    except (ImportError, AttributeError, RuntimeError):
+        print(string)
+
 @views.route("/", methods=["GET", "POST"])
 def home():
     return render_template("home.html")
 
 @views.route("/trigger_task", methods=["POST"])
 def start_task() -> dict[str, object]:
+    log_or_print("starting new task")
     iterations = request.form.get('iterations')
     result = long_running_task.delay(int(iterations))
     # Use the Redis client from the Celery app

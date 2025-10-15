@@ -55,7 +55,7 @@ RUN /usr/local/bin/micromamba run -n app-env uv pip install -r requirements.txt
 COPY . .
 
 # Expose the port on which the application will run.
-EXPOSE 8000
+EXPOSE 5000
 
 # Specify the command to run the application using Gunicorn from the new environment.
 # The `micromamba run` command ensures the application is executed within the correct
